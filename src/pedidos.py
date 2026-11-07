@@ -19,7 +19,12 @@ def _validar_existencias(producto_id, nuevo_total, existencias):
         raise ExistenciasInsuficientesError(f"Solo hay {disponibles} unidades disponibles")
 
 
-def agregar_al_pedido(pedido, producto_id, cantidad, existencias):
+def agregar_al_pedido(
+    pedido: dict[int, int],
+    producto_id: int,
+    cantidad: int,
+    existencias: dict[int, int],
+) -> dict[int, int]:
     _validar_cantidad(cantidad)
     nuevo_total = pedido.get(producto_id, 0) + cantidad
     _validar_existencias(producto_id, nuevo_total, existencias)
