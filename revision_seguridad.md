@@ -1,66 +1,74 @@
-# Informe de revision de calidad y seguridad
+# Informe de revisión de código y seguridad
 
-Proyecto: tienda-pedidos (app de pedidos de un minimercado). Autor: Rodrigo Andres Rojas Perez. Fecha: 14/11/2026.
+Proyecto: tienda-pedidos (app de pedidos de un minimercado de barrio, en Python)
+Estudiante: Rodrigo Andrés Rojas Pérez
+Fecha: 2026-11-14
+Commit revisado: 603dda6 (último commit antes de la revisión con IA y las correcciones)
 
-## 1. Herramientas y criterios usados
+## 1. Herramientas y criterios
 
-- Linter: ruff 0.17.5, configurado en `pyproject.toml` con las reglas E, F (estilo y errores), B (errores probables) y S (seguridad). En `tests/` se ignora S101 porque `assert` es normal en pytest. Resultado: `All checks passed!`.
+- **Linter:** ruff 0.17.5 con las reglas E, F, B y S. Configuración en pyproject.toml. Resultado final: `All checks passed!`.
+- **Auditoría de dependencias:** pip-audit sobre requirements-dev.txt (pytest 9.2.0 y ruff 0.17.5, con versión fija) — resultado: sin vulnerabilidades conocidas.
+- **Lista de revisión:** la de la semana 6 (corrección y pruebas, diseño y legibilidad, seguridad).
+- **Revisión con IA:** Claude (chat) con el prompt de revisión de la semana (ver sección 3 y la entrada 7 de la bitácora).
 
-- Pruebas: pytest 9.2.0, 13 pruebas pasando (11 originales y 2 nuevas de abuso).
+### Puntos de seguridad revisados
 
-- Dependencias: `requirements-dev.txt` con versiones fijas; `pip-audit` dijo `No known vulnerabilities found`.
-
-- Segunda revision con un asistente de IA (Claude), con un prompt que pedia criterios, tabla con linea y severidad, y separar problemas seguros de sospechas.
-
-Revision de los cinco puntos:
-
-| Punto | Resultado |
-|---|---|
-| Inyeccion | No aplica: el proyecto todavia no tiene base de datos ni consultas. Cuando la tenga, todas usaran parametros. |
-| Secretos | Revisado. Corri `git log -p --all` con grep buscando password, secret, api_key, token y sk-, y `git log --all --full-history -- .env`. Los dos salieron sin ningun resultado. Nunca subi una clave al repositorio. `.env` esta en `.gitignore` y existe `.env.example` sin valores. |
-| Contrasenas | No aplica: el proyecto no guarda contrasenas. Si despues hay inicio de sesion, se usara scrypt, bcrypt o argon2. |
-| Control de acceso | No aplica por ahora: la funcion no tiene roles. Queda pendiente para la lista de pedidos de la duena (HU-05). |
-| Dependencias | Solo pytest y ruff, con version fija y pip-audit sin vulnerabilidades. |
+| Punto | ¿Aplica? | Resultado |
+|---|---|---|
+| Inyección (consultas con parámetros) | No, porque el proyecto todavía no tiene base de datos ni consultas. Cuando la tenga, todas usarán parámetros. | Sin hallazgos |
+| Secretos (código, historial, .gitignore, .env.example) | Sí | Corrí `git log -p --all` con grep buscando password, secret, api_key, token y sk-, y `git log --all --full-history -- .env`. Los dos salieron sin resultados. `.env` está en .gitignore y existe .env.example sin valores. Sin hallazgos. |
+| Contraseñas (scrypt, bcrypt o argon2 con sal) | No, porque el proyecto no guarda contraseñas. Si más adelante hay inicio de sesión, se usará scrypt, bcrypt o argon2. | Sin hallazgos |
+| Control de acceso (rol verificado y prueba de abuso) | No por ahora, porque la función no tiene roles ni usuarios. Queda pendiente para la lista de pedidos de la dueña (HU-05). | Ver Pendientes |
+| Dependencias (existen, necesarias, versión fijada, pip-audit) | Sí | Solo pytest y ruff, ambas necesarias, con versión fija; pip-audit sin vulnerabilidades. Sin hallazgos. |
 
 ## 2. Tabla de hallazgos
 
-Las lineas son las del archivo `src/pedidos.py` antes de los cambios.
+Las líneas son las de src/pedidos.py antes de los cambios.
 
-| Linea | Problema | Categoria | Severidad | Correccion | Commit |
-|---|---|---|---|---|---|
-| 10 | `True` y `False` se aceptaban como cantidad (`agregar_al_pedido({}, 1, True, {1: 10})` daba `{1: 1}`) | Validacion de entradas | Baja | `_validar_cantidad` rechaza los booleanos; prueba de abuso nueva | `05e5e68` (prueba), `1120c41` (arreglo) |
-| 1, 5, 9, 14, 22 | Clases y funciones sin docstring | Documentacion | Baja | Docstrings con que recibe, que devuelve y que errores lanza | `f819373` |
-| Final de la funcion | Tres lineas para copiar, asignar y devolver el pedido | Legibilidad | Baja | Una sola expresion: `return {**pedido, producto_id: nuevo_total}` | `f8fc7d7` |
-| Todo el repositorio | README sin las ocho secciones | Documentacion | Baja | README con las ocho secciones y contrato actualizado | `2295633` |
-| Todo el repositorio | Sin linter, sin `.env.example` y sin versiones fijas | Calidad y secretos | Baja | Se agregaron ruff, `.env.example` y `requirements-dev.txt` con pip-audit | `5f65840`, `7d32f1f`, `603dda6` |
+| Id | Archivo y línea | Problema | Categoría (OWASP o tipo) | Severidad | Corrección | Commit |
+|---|---|---|---|---|---|---|
+| H-01 | src/pedidos.py:10 | `True` y `False` se aceptaban como cantidad (`agregar_al_pedido({}, 1, True, {1: 10})` devolvía `{1: 1}`) | Validación de entradas | Baja | `_validar_cantidad` rechaza los booleanos; prueba de abuso nueva (`test_error_si_la_cantidad_es_un_booleano`) | 05e5e68 (prueba en rojo), 1120c41 (corrección) |
+| H-02 | src/pedidos.py:1, 5, 9, 14, 22 | Clases y funciones sin docstring | Mantenibilidad | Baja | Docstrings con qué recibe, qué devuelve y qué errores lanza | f819373 |
+| H-03 | src/pedidos.py (final de `agregar_al_pedido`) | Tres líneas para copiar, asignar y devolver el pedido | Legibilidad | Baja | Una sola expresión: `return {**pedido, producto_id: nuevo_total}` | f8fc7d7 |
+| H-04 | Repositorio completo | README sin las ocho secciones | Mantenibilidad | Baja | README con las ocho secciones y contrato actualizado | 2295633 |
+| H-05 | Repositorio completo | Sin linter configurado, sin .env.example y sin versiones fijas | Calidad y secretos | Baja | Se agregaron ruff en pyproject.toml, .env.example y requirements-dev.txt con pip-audit | 5f65840, 7d32f1f, 603dda6 |
 
-Ninguna prueba se modifico para que pasara. Lo comprobe con `git diff 603dda6 05e5e68 -- tests/`: la unica linea cambiada fue el salto de linea final de la ultima prueba.
+**Severidad:** alta (permite acceder o cambiar datos sin permiso, o expone secretos), media (error probable o riesgo con condiciones), baja (estilo o mantenibilidad).
 
-## 3. Revision con IA
+Ninguna prueba se modificó para que pasara. Lo comprobé con `git diff 603dda6 05e5e68 -- tests/`: la única línea cambiada fue el salto de línea final de la última prueba anterior.
 
-La IA devolvio estos hallazgos. Yo verifique cada uno corriendo el codigo.
+### Avisos del linter no corregidos
 
-| Hallazgo de la IA | Que comprobe | Clasificacion |
+| Regla | Archivo y línea | Por qué se mantiene |
 |---|---|---|
-| `True` aceptado como cantidad | Imprimio `{1: 1}` | Real (corregido) |
-| Sin docstrings | Es cierto | Real (corregido) |
-| Existencias negativas dan el mensaje "Solo hay -3 unidades" | Da `ExistenciasInsuficientesError` con ese texto | Falso positivo: segun el contrato las existencias vienen del sistema, no de un usuario |
-| Pedido con valor `'2'` falla con TypeError | Da `TypeError` | Falso positivo: el contrato exige enteros y quien rompe el contrato recibe el error |
-| `ValueError` en vez de `TypeError` para un tipo equivocado | Lo revise contra el contrato | Falso positivo: el contrato define `ValueError` para cantidad invalida |
-| Mensajes de error con `producto_id` | Lo revise contra el contrato | Falso positivo: los ids son numeros enteros por contrato |
-| Dos clases con `pass` | Lo revise en el codigo | Falso positivo: es la forma normal de crear errores propios |
+| S101 | tests/test_pedidos.py | `assert` es la forma normal de comprobar en pytest; se ignora solo en tests/ con per-file-ignores en pyproject.toml |
 
-**Algo importante que la IA no encontro:** la IA solo reviso un archivo. No pudo ver que el repositorio todavia no tiene control de acceso para la lista de pedidos de la duena (HU-05), que solo ella deberia ver. Tampoco vio que faltaba el `.env.example` ni las versiones fijas de las dependencias, que son cosas del repositorio completo y no de un archivo.
+## 3. Revisión con IA
 
-No use un agente de codigo en esta tarea: todos los cambios los hice yo, a mano, con commits separados.
+**Prompt usado:** prompt de revisión de código senior con criterios (errores no manejados, seguridad, legibilidad y docstrings), con mi `cat -n src/pedidos.py` pegado, pidiendo tabla con línea, problema, categoría, severidad y cómo arreglarlo, y separando problemas seguros de sospechas (entrada 7 de la bitácora).
+
+| Hallazgo de la IA | ¿Real o falso positivo? | Cómo lo verifiqué |
+|---|---|---|
+| `True` aceptado como cantidad (línea 10) | Real | Corrí la función con `True` y devolvió `{1: 1}`; la prueba nueva falló antes de corregir (H-01) |
+| Clases y funciones sin docstring | Real | Lo vi en el archivo (H-02) |
+| Existencias negativas dan el mensaje "Solo hay -3 unidades" | Falso positivo | Lo corrí y da ese mensaje, pero el contrato dice que las existencias vienen del sistema, no de un usuario |
+| Pedido con valor `'2'` falla con TypeError | Falso positivo | Lo corrí y da TypeError; el contrato exige enteros y quien rompe el contrato recibe el error |
+| `ValueError` en vez de `TypeError` para un tipo equivocado | Falso positivo | Lo revisé contra el contrato, que define `ValueError` para una cantidad inválida |
+| Mensajes de error con `producto_id` | Falso positivo | Lo revisé en el código: los ids son números enteros por contrato |
+| Dos clases con `pass` | Falso positivo | Lo revisé en el código: es la forma normal de crear errores propios |
+
+**Lo que la IA no encontró:** la IA solo revisó un archivo. No pudo ver que el repositorio todavía no tiene control de acceso para la lista de pedidos de la dueña (HU-05), que solo ella debería ver. Tampoco vio que faltaban el .env.example y las versiones fijas de las dependencias (H-05), que son cosas del repositorio completo y no de un archivo.
+
+No usé un agente de código en esta tarea: todos los cambios los hice yo, con commits separados.
 
 ## 4. Pendientes
 
-- Control de acceso para la lista de pedidos (HU-05), con su prueba de abuso, cuando exista.
+| Pendiente | Por qué no se corrigió todavía | Plan |
+|---|---|---|
+| Control de acceso para la lista de pedidos (HU-05) | La funcionalidad todavía no existe | Verificar el rol de la dueña y agregar una prueba de abuso cuando se construya |
+| Consultas con parámetros | Todavía no hay base de datos | Usar parámetros en todas las consultas cuando se agregue |
+| Contraseñas con scrypt, bcrypt o argon2 | Todavía no hay inicio de sesión | Usar una de esas tres con sal si se agrega |
+| Volver a pasar pip-audit | Las dependencias no han cambiado | Correrlo cada vez que cambie requirements-dev.txt |
 
-- Si se agrega base de datos: consultas con parametros.
-
-- Si se agrega inicio de sesion: contrasenas con scrypt, bcrypt o argon2.
-
-- Volver a pasar `pip-audit` cada vez que cambien las dependencias.
-
+**Claves expuestas:** Ninguna.
