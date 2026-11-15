@@ -69,3 +69,12 @@ def test_error_si_la_cantidad_no_es_un_entero():
 def test_error_si_el_producto_no_existe():
     with pytest.raises(ProductoNoExisteError):
         agregar_al_pedido({}, 99, 1, {1: 10})
+
+
+
+# ---------- Casos de abuso ----------
+
+@pytest.mark.parametrize("cantidad", [True, False])
+def test_error_si_la_cantidad_es_un_booleano(cantidad):
+    with pytest.raises(ValueError):
+        agregar_al_pedido({}, 1, cantidad, {1: 10})
