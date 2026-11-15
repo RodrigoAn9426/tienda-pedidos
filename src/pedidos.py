@@ -7,7 +7,7 @@ class ExistenciasInsuficientesError(Exception):
 
 
 def _validar_cantidad(cantidad):
-    if not isinstance(cantidad, int) or cantidad <= 0:
+    if isinstance(cantidad, bool) or not isinstance(cantidad, int) or cantidad <= 0:
         raise ValueError("La cantidad debe ser un entero mayor que 0")
 
 
