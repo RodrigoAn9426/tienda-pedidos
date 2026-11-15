@@ -154,3 +154,26 @@ La primera versión del código dejaba pasar un pedido que se pasaba de las exis
 
 El asistente me ayudó más escribiendo las pruebas y armando el código base, porque me ahorró mucho tiempo. Las pruebas atraparon un error real de la primera versión: no sumaba lo que ya había en el pedido. Escribirlas primero me obligó a pensar en los casos raros, como pedir justo lo que hay. También aprendí que el código se pega en el editor y no en la terminal, porque una vez la terminal se llenó de errores por pegar el código ahí. En la próxima funcionalidad le pediría al asistente que me explique cada línea antes de aceptarla, y agregaría una prueba para cantidades como `True` o `False`.
 
+### Entrada 7 - Revision con IA del codigo (14/11/2026)
+- Prompt o sugerencia: le envie a Claude (en modo chat) un prompt de revision de codigo senior con criterios (errores no manejados, seguridad, legibilidad y docstrings), con mi `cat -n src/pedidos.py` pegado. Pedi una tabla con linea, problema, categoria, severidad y como arreglarlo, separando los problemas seguros de las sospechas.
+- Respuesta de la IA: 2 problemas seguros (los booleanos aceptados como cantidad y la falta de docstrings) y 5 sospechas (existencias negativas, pedido con valores que no son numeros, ValueError en vez de TypeError, mensajes con el id del producto y dos clases con pass).
+- Decision: acepte los 2 problemas seguros y rechace las 5 sospechas como falsos positivos.
+- Razon: las 5 sospechas tienen una explicacion en el contrato del README: las existencias vienen del sistema y no de un usuario, el pedido y los ids son enteros por contrato, el contrato define ValueError para una cantidad invalida y las clases con pass son la forma normal de crear errores propios.
+- Verificacion: corri 3 comandos para comprobar los hallazgos y vi el resultado de cada uno. Con True imprimio {1: 1} (real). Con existencias en -3 dio el mensaje raro, pero el contrato lo permite. Con el pedido {1: '2'} dio TypeError, que es lo esperado si se rompe el contrato.
+- Algo que la IA no vio: solo reviso un archivo, asi que no pudo ver que el repositorio aun no tiene control de acceso para la lista de pedidos de la duena (HU-05).
+- Commit relacionado: 05e5e68, 1120c41 y f819373.
+
+### Entrada 8 - Correccion de los booleanos como cantidad (14/11/2026)
+- Prompt o sugerencia: la IA propuso rechazar True y False en `_validar_cantidad`, agregando primero una prueba de abuso que fallara.
+- Decision: aceptada.
+- Razon: en Python True y False cuentan como enteros, entonces `agregar_al_pedido({}, 1, True, {1: 10})` devolvia {1: 1}, y el contrato del README dice que los booleanos no se aceptan como cantidad.
+- Verificacion: agregue la prueba nueva y fallo primero (1 failed, 12 passed), lo que confirmo que el problema era real. Despues de corregir pasaron las 13 pruebas y ruff dijo All checks passed. No modifique ninguna de las 11 pruebas anteriores: con git diff comprobe que lo unico que cambio fue el salto de linea final del archivo.
+- Commit relacionado: 05e5e68 (prueba en rojo) y 1120c41 (correccion).
+
+### Entrada 9 - Docstrings de las funciones (14/11/2026)
+- Prompt o sugerencia: le pedi a la IA un borrador de docstrings para las funciones y los errores, con que recibe, que devuelve y que errores lanza.
+- Decision: aceptada, despues de leer cada docstring y compararlo con el codigo.
+- Razon: la tarea pide que el docstring diga lo que de verdad hace la funcion, y el borrador tenia que coincidir con el codigo.
+- Verificacion: lei los docstrings uno por uno y comprobe que coincidieran, por ejemplo que `agregar_al_pedido` devuelve un pedido nuevo con `{**pedido, ...}` y no modifica el que recibe, y que lanza los tres errores que dice. Las 13 pruebas siguen pasando y ruff queda limpio.
+- Commit relacionado: f819373.
+
