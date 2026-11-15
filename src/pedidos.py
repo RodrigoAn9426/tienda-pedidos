@@ -29,6 +29,4 @@ def agregar_al_pedido(
     nuevo_total = pedido.get(producto_id, 0) + cantidad
     _validar_existencias(producto_id, nuevo_total, existencias)
 
-    nuevo_pedido = dict(pedido)
-    nuevo_pedido[producto_id] = nuevo_total
-    return nuevo_pedido
+    return {**pedido, producto_id: nuevo_total}
