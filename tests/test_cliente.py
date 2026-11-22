@@ -5,6 +5,8 @@ from cliente import validar_cliente
 NOMBRE_OK = "Ana Gomez"
 CEDULA_OK = "1000000001"
 TELEFONO_OK = "3001234567"
+# Digitos arabigo-indicos: str.isdigit() los acepta, pero la regla pide 0-9
+CEDULA_ARABE = "".join(chr(0x0660 + int(d)) for d in "1000000001")
 
 
 @pytest.mark.parametrize(
@@ -33,6 +35,7 @@ def test_datos_validos_devuelven_true(nombre, cedula, telefono):
         (NOMBRE_OK, "10000000A1", TELEFONO_OK, "cedula"),  # con letras
         (NOMBRE_OK, "1.000.000", TELEFONO_OK, "cedula"),  # con puntos
         (NOMBRE_OK, "", TELEFONO_OK, "cedula"),  # vacía
+        (NOMBRE_OK, CEDULA_ARABE, TELEFONO_OK, "cedula"),  # otro alfabeto
         (NOMBRE_OK, CEDULA_OK, "300123456", "telefono"),  # límite: 9 dígitos
         (NOMBRE_OK, CEDULA_OK, "30012345678", "telefono"),  # límite: 11 dígitos
         (NOMBRE_OK, CEDULA_OK, "2001234567", "telefono"),  # límite: prefijo 2
