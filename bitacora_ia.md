@@ -183,7 +183,7 @@ El asistente me ayudó más escribiendo las pruebas y armando el código base, p
 - Decisión: acepté las tres funciones y esas decisiones.
 - Razón: las tres tienen reglas en mis historias y una combina varias condiciones.
 - Verificación: leí la regla de cada función y comprobé que los esperados salieran de las historias y del contrato del README, y anoté seis ambigüedades en el registro.
-- Commit relacionado: d71019a (los archivos de las dos funciones nuevas se escribieron con la regla ya definida).
+- Commit relacionado: 18412fb (los archivos de las dos funciones nuevas se escribieron con la regla ya definida).
 
 ### Entrada 11 - Generación de pruebas con IA (22/11/2026)
 - Prompt o sugerencia: le di a Claude mis reglas y tablas y le exigí pytest con parametrize y un comentario por fila, pytest.raises con el tipo de error exacto, esperados fijos y sin modificar mi código.
@@ -191,7 +191,7 @@ El asistente me ayudó más escribiendo las pruebas y armando el código base, p
 - Decisión: conservé test_cliente.py y test_confirmacion.py y descarté test_agregar_casos.py completo.
 - Razón: test_agregar_casos.py repetía pruebas que ya tenía de la semana 5, con los mismos datos o la misma partición (pregunta 3).
 - Verificación: comparé cada llamada a agregar_al_pedido con tests/test_pedidos.py usando grep -n. Después de descartarlo, las pruebas siguieron en 44 passed y ruff sin avisos.
-- Commit relacionado: 5ff211a.
+- Commit relacionado: 2d2a614 (pruebas de la IA sin revisar) y 5ff211a (descarte de test_agregar_casos.py).
 
 ### Entrada 12 - Generación de datos sintéticos (22/11/2026)
 - Prompt o sugerencia: le pedí a Claude datos de clientes inventados con contexto del Huila, sin personas reales, con teléfonos ficticios y con casos difíciles (tildes, ñ, apóstrofo, texto vacío, valores en cero), para usarlos en un fixture.
