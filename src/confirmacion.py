@@ -27,7 +27,7 @@ def validar_confirmacion(pedido: dict[int, int], existencias: dict[int, int]) ->
     if not pedido:
         raise PedidoVacioError("Agrega al menos un producto")
     for producto_id, cantidad in pedido.items():
-        if existencias.get(producto_id, 0) < cantidad:
+        if existencias.get(producto_id, 0) <= cantidad:
             raise ProductoNoDisponibleError(
                 f"El producto {producto_id} ya no esta disponible"
             )
