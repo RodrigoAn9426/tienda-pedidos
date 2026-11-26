@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.14"
           cache: pip
@@ -34,7 +34,7 @@ jobs:
     timeout-minutes: 10
     needs: pruebas
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Construir la imagen
         run: docker build -t tienda-pedidos .
       - name: Ejecutar las pruebas dentro del contenedor
