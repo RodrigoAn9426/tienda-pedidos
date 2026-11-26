@@ -208,3 +208,17 @@ El asistente me ayudó más escribiendo las pruebas y armando el código base, p
 - Verificación: tres de los cuatro errores fueron detectados. El cuarto (quitar isascii) no lo detectó ninguna prueba, así que agregué el caso de la cédula con dígitos de otro alfabeto, repetí el error y esta vez falló (1 failed, 44 passed). Después de cada cambio, git status quedó en working tree clean.
 - Commit relacionado: 78905a9.
 
+### Entrada 14 - Pipeline de CI y Dockerfile para el módulo 6 (25/11/2026)
+- Prompt o sugerencia: le pedí a Claude (en el chat) que me guiara en la entrega final del seminario. Propuso crear un pipeline de GitHub Actions (.github/workflows/ci.yml) que corre ruff, pytest con cobertura mínima del 90 %, pip-audit y construye una imagen, con permisos de solo lectura, sin secretos y con versiones fijas, y un Dockerfile con usuario sin privilegios y un .dockerignore.
+- Respuesta de la IA: los tres archivos. El Dockerfile ejecuta las pruebas, porque mi proyecto todavía no tiene servidor ni página web, solo la lógica del negocio.
+- Decisión: la acepté sin cambios de fondo.
+- Razón: sigue la lista de revisión de pipelines y Dockerfiles del material de la semana 9: permisos mínimos, ningún secreto, versiones fijas y un fallo de pruebas hace fallar el pipeline.
+- Verificación: antes de subirlo corrí lo mismo en mi equipo (ruff sin avisos, 57 pruebas pasando con 100 % de cobertura y pip-audit sin vulnerabilidades). El bloc de notas guardó el Dockerfile como Dockerfile.txt y lo renombré con mv, porque Docker solo reconoce el nombre exacto. En GitHub salió verde a la primera: trabajo pruebas en 27 s y trabajo imagen (construcción de la imagen y las pruebas dentro del contenedor) en 16 s. GitHub mostró dos advertencias de que las acciones usaban Node.js 20.
+- Commit relacionado: c3b70e2.
+
+### Entrada 15 - Pipeline en rojo a propósito (25/11/2026)
+- Prompt o sugerencia: Claude propuso demostrar que el pipeline detecta errores: meter el error de cambiar < por <= en src/confirmacion.py, en una rama aparte, y abrir un pull request.
+- Decisión: aceptada.
+- Razón: un pipeline que solo pasa no demuestra que protege el código. Ese mismo error ya lo había probado a mano en la semana 7.
+- Verificación: en el pull request #1 el trabajo pruebas salió en rojo con 2 failed y 55 passed (test_pedido_con_existencias_suficientes_se_confirma[pedido2-existencias2] y test_pedido_armado_con_existencias_de_la_tienda_se_confirma, esta última de los datos sintéticos) y el trabajo imagen quedó omitido. No hice merge: master sigue en 57 passed.
+- Commit relacionado: 1b1c773, solo en la rama prueba-pipeline-rojo.
