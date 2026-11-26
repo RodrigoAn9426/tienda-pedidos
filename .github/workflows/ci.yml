@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - name: Instalar dependencias
+        run: pip install -r requirements-dev.txt
+      - name: Linter (ruff)
+        run: ruff check .
+      - name: Pruebas con cobertura
+        run: pytest --cov=src --cov-branch --cov-report=term-missing --cov-fail-under=90
+      - name: Auditoria de dependencias
+        run: pip-audit -r requirements-dev.txt
+
+  imagen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: pruebas
+    steps:
+      - uses: actions/checkout@v4
+      - name: Construir la imagen
+        run: docker build -t tienda-pedidos .
+      - name: Ejecutar las pruebas dentro del contenedor
+        run: docker run --rm tienda-pedidos
