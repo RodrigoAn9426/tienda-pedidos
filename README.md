@@ -4,7 +4,7 @@
 
 Proyecto final del Seminario de Inteligencia Artificial Aplicada al Ciclo de Vida del Software. La idea es una app de pedidos para un minimercado de barrio: los vecinos ven los productos y piden desde el celular, y la dueña ve los pedidos en un solo lugar.
 
-**Estado real del proyecto:** este repositorio tiene la logica de negocio de tres funciones, con sus pruebas, y el pipeline que las comprueba. **Todavia no tiene pagina web, servidor ni base de datos.** El diseno completo (ADR-001) usa Laravel y PostgreSQL; la logica se escribio en Python para practicar la regla de las pruebas primero, y la misma regla se llevara despues al servidor de la app.
+**Estado real del proyecto:** este repositorio tiene la logica de negocio de tres funciones, con sus pruebas, el pipeline que las comprueba y una **interfaz web minima de demostracion** con dos pantallas (cliente y duena). **Todavia no tiene el servidor en Laravel ni la base de datos del diseno (ADR-001):** los datos viven en memoria y se pierden al apagar el programa. La interfaz no tiene pruebas automaticas; se probo a mano. Cubre HU-01 a HU-06; HU-07 y HU-08 no estan construidas.
 
 | Funcion | Archivo | Historia | Que hace |
 |---|---|---|---|
@@ -31,7 +31,15 @@ pip install -r requirements-dev.txt
 
 ## 4. Ejecucion
 
-Esta version son funciones, no una app con pantalla. Se pueden probar desde la terminal (Git Bash):
+La interfaz minima usa solo la libreria estandar de Python (sin instalar nada mas). Desde la raiz del proyecto, en Git Bash:
+
+```
+PYTHONPATH=src python app.py
+```
+
+Abre http://127.0.0.1:8000 (pantalla del cliente) y http://127.0.0.1:8000/duena (pantalla de la duena). Para cerrar el servidor pulsa Ctrl+C. Usa solo datos inventados, por ejemplo `Ana Gomez`, `1000000001` y `3001234567`.
+
+Tambien se pueden probar las tres funciones desde la terminal (Git Bash):
 
 ```
 PYTHONPATH=src python -c "from pedidos import agregar_al_pedido; print(agregar_al_pedido({}, 1, 2, {1: 10}))"
@@ -81,6 +89,8 @@ tienda-pedidos/
   src/pedidos.py           agregar_al_pedido y sus errores (HU-02)
   src/cliente.py           validar_cliente (HU-04)
   src/confirmacion.py      validar_confirmacion y sus errores (HU-03 y HU-06)
+  app.py                backend de la interfaz minima (usa las tres funciones)
+  frontend/             pantallas del cliente y de la duena (HTML, CSS y JS)
   tests/                   las 57 pruebas y los datos sinteticos (conftest.py)
   docs/                    documentos de los modulos 1, 2, 3 y 6
   .github/workflows/ci.yml pipeline de integracion continua
