@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Minimercado de barrio</title><link rel="stylesheet" href="/estilo.css"></head>
+<body>
+<header class="barra"><div class="barra-in">
+<div class="marca"><span class="logo">&#128717;</span>
+<div>Minimercado de barrio<small>Pide desde tu celular y recoge en la tienda</small></div></div>
+<nav><a href="/" class="activo">Soy cliente</a><a href="/duena">Soy la dueña</a></nav>
+</div></header>
+<main>
+<div class="pasos">
+<div class="paso"><b>1</b> Elige tus productos</div>
+<div class="paso"><b>2</b> Escribe tus datos</div>
+<div class="paso"><b>3</b> Confirma y recoge</div></div>
+{{MENSAJE}}
+<div class="cols">
+<section><h2>Productos</h2>{{CATALOGO}}</section>
+<aside>
+<div class="panel"><h2>Tu pedido</h2><ul>{{ITEMS}}</ul>
+<div class="total"><span>Unidades</span><span>{{TOTAL}}</span></div></div>
+<div class="panel"><h2>Tus datos</h2>
+<form method="post" action="/confirmar">
+<label>Nombre y apellido</label><input type="text" name="nombre" placeholder="Ana Gomez">
+<label>Cédula</label><input type="text" name="cedula" placeholder="1000000001">
+<label>Celular</label><input type="text" name="telefono" placeholder="3001234567">
+<button class="confirmar">Confirmar pedido</button></form>
+<p class="nota">La dueña ve tu nombre y celular para preparar el pedido. La cédula
+no se muestra. Nada se guarda en disco.</p></div>
+</aside></div></main>
+<script src="/interfaz.js"></script></body></html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="refresh" content="10">
+<title>Pedidos de la tienda</title><link rel="stylesheet" href="/estilo.css"></head>
+<body>
+<header class="barra"><div class="barra-in">
+<div class="marca"><span class="logo">&#128203;</span>
+<div>Pedidos de la tienda<small>Se actualiza sola cada 10 segundos</small></div></div>
+<nav><a href="/">Soy cliente</a><a href="/duena" class="activo">Soy la dueña</a></nav>
+</div></header>
+<main>
+<div class="stats">
+<div class="stat"><b>{{NUM_PEDIDOS}}</b>Pedidos confirmados</div>
+<div class="stat"><b>{{NUM_UNIDADES}}</b>Unidades pedidas</div></div>
+<h2>Pedidos recibidos</h2>{{PEDIDOS}}
+</main></body></html>
