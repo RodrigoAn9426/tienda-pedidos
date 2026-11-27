@@ -229,3 +229,19 @@ El asistente me ayudó más escribiendo las pruebas y armando el código base, p
 - Razón: el pipeline que escribió la IA usaba versiones viejas de las acciones. No era un error, pero una versión que se retira termina fallando.
 - Verificación: la IA confirmó con una búsqueda que esas versiones existen y usan Node 24. Cambié solo esas líneas con sed y comprobé con grep -n y git diff --stat que solo cambió un archivo. En GitHub, la ejecución #2 salió en verde (49 s).
 - Commit relacionado: 6267215.
+
+### Entrada 17 - Interfaz web mínima con IA (26/11/2026)
+- Prompt o sugerencia: como mis compañeros hacen el proyecto funcional, le pedí a Claude (en el chat) una interfaz para mi proyecto. Propuso una interfaz mínima de dos pantallas, una para el cliente y otra para la dueña, hecha con la librería estándar de Python (`app.py`), que usa mis tres funciones sin cambiar nada de `src/`. Después le pedí que se viera mejor y que separara backend y frontend: el backend quedó en `app.py` y el frontend en la carpeta `frontend/` (HTML, CSS y JavaScript).
+- Respuesta de la IA: la primera versión no coincidía con mis criterios de aceptación: dejaba los productos agotados visibles con la etiqueta «Agotado» (HU-06 dice que no deben aparecer), confirmaba con «Gracias por tu compra» en vez de «Recoge tu pedido en la tienda» (HU-03), no guardaba la cédula (HU-04) y no tenía los mensajes de catálogo vacío ni de lista vacía (HU-01 y HU-05). La IA no había visto mi documento de requisitos y lo dijo cuando le pregunté si estaba seguro.
+- Decisión: aceptada con cambios.
+- Razón: la interfaz sirve para mostrar el sistema funcionando, pero lo que entrego tiene que coincidir con mis documentos. Subí `Rojas_Rodrigo_S3_Requisitos.docx` y `Rojas_Rodrigo_S4_Diseno.docx` y la interfaz se corrigió contra mis criterios. No agregué precios ni que la dueña cancele pedidos, porque ninguna historia lo pide y mi diseño dice que el precio no se incluyó a propósito.
+- Verificación: comparé cada criterio de HU-01 a HU-06 con la interfaz. Corrí `python -m ruff check .` (All checks passed!) y `python -m pytest -q` (57 passed). La probé a mano en el navegador con datos inventados: pedido vacío, pedir 5 de leche con 3 disponibles, teléfono vacío, confirmar con `Ana Gomez`, ver el pedido en la pantalla de la dueña sin la cédula y los huevos ocultos. Al principio «Agregar» se quedaba cargando porque el servidor atendía una conexión a la vez; se corrigió con `ThreadingHTTPServer` y después respondió rápido. En GitHub Actions la ejecución #9 salió en verde.
+- Lo que sigue pendiente: `app.py` no tiene pruebas automatizadas, los datos viven en memoria, hay un solo pedido en curso para todos los visitantes, HU-07 y HU-08 no están hechas y la interfaz no sigue el diseño con Laravel y PostgreSQL. Lo declaré en el informe y en el README.
+- Commit relacionado: a2ff13e.
+
+### Entrada 18 - Informe y README con el estado real (26/11/2026)
+- Prompt o sugerencia: el informe final y el README decían que no había interfaz, y eso dejó de ser cierto. Le pedí a Claude que los actualizara. Propuso cambios en el resumen, la arquitectura, la tabla de historias, los pendientes, la parte ética y los aprendizajes del informe, y un script (`actualizar_readme.py`) para corregir el README.
+- Decisión: aceptada.
+- Razón: lo que entrego tiene que decir lo mismo que muestra la interfaz. Las historias HU-01 a HU-06 quedaron como demostración y no como terminadas, porque los datos viven en memoria y la interfaz no tiene pruebas automatizadas.
+- Verificación: `git diff --stat` mostró que solo cambiaron `README.md`, `informe_final.md` e `informe_final.pdf`, y con `grep -n` comprobé que el README menciona la interfaz mínima, `app.py` y `frontend/`.
+- Commit relacionado: Informe y README con el estado real de la interfaz.
