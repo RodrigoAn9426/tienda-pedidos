@@ -222,3 +222,10 @@ El asistente me ayudó más escribiendo las pruebas y armando el código base, p
 - Razón: un pipeline que solo pasa no demuestra que protege el código. Ese mismo error ya lo había probado a mano en la semana 7.
 - Verificación: en el pull request #1 el trabajo pruebas salió en rojo con 2 failed y 55 passed (test_pedido_con_existencias_suficientes_se_confirma[pedido2-existencias2] y test_pedido_armado_con_existencias_de_la_tienda_se_confirma, esta última de los datos sintéticos) y el trabajo imagen quedó omitido. No hice merge: master sigue en 57 passed.
 - Commit relacionado: 1b1c773, solo en la rama prueba-pipeline-rojo.
+
+### Entrada 16 - Actualizar las acciones del pipeline (25/11/2026)
+- Prompt o sugerencia: GitHub mostró dos advertencias en la ejecución #1: las acciones actions/checkout@v4 y actions/setup-python@v5 usaban Node.js 20, que se está retirando. Le pedí a Claude que me dijera cómo arreglarlo. Buscó en la web las versiones nuevas y propuso checkout@v5 y setup-python@v6.
+- Decisión: aceptada.
+- Razón: el pipeline que escribió la IA usaba versiones viejas de las acciones. No era un error, pero una versión que se retira termina fallando.
+- Verificación: la IA confirmó con una búsqueda que esas versiones existen y usan Node 24. Cambié solo esas líneas con sed y comprobé con grep -n y git diff --stat que solo cambió un archivo. En GitHub, la ejecución #2 salió en verde (49 s).
+- Commit relacionado: 6267215.
